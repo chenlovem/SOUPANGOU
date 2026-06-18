@@ -52,3 +52,5 @@ next-env.d.ts
 /data/
 /skills-lock.json
 /.agents/
+*.sql
+/import.bat
