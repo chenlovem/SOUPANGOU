@@ -10,7 +10,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 const navItems = [
   { label: "首页", href: "/" },
   { label: "资源", href: "/resource" },
-  { label: "联系我们", href: "/contact" },
+  { label: "进阶搜索", href: "https://chenlovem.github.io/TG-SEARCH/", external: true },
 ];
 
 export function Header() {
@@ -29,30 +29,43 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link href="/" title="盘小子" className="flex items-center gap-2">
+          <Link href="/" title="搜盘狗" className="flex items-center gap-2">
             <Logo size={32} />
-            <span className="text-xl font-bold text-blue-500">盘小子</span>
+            <span className="text-xl font-bold text-blue-500">搜盘狗</span>
           </Link>
           <nav className="hidden md:flex">
             <ul className="flex gap-5">
               {navItems.map((item) => {
                 const isActive =
-                  pathname === item.href ||
-                  (item.href !== "/" && pathname?.startsWith(item.href));
+                  !item.external &&
+                  (pathname === item.href ||
+                    (item.href !== "/" && pathname?.startsWith(item.href)));
 
                 return (
                   <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      title={item.label}
-                      className={`text-sm font-medium ${
-                        isActive
-                          ? "text-blue-500 font-semibold"
-                          : "text-gray-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400"
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
+                    {item.external ? (
+                      <a
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={item.label}
+                        className="text-sm font-medium text-gray-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400"
+                      >
+                        {item.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={item.href}
+                        title={item.label}
+                        className={`text-sm font-medium ${
+                          isActive
+                            ? "text-blue-500 font-semibold"
+                            : "text-gray-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    )}
                   </li>
                 );
               })}
@@ -101,22 +114,35 @@ export function Header() {
               <ul className="space-y-3">
                 {navItems.map((item) => {
                   const isActive =
-                    pathname === item.href ||
-                    (item.href !== "/" && pathname?.startsWith(item.href));
+                    !item.external &&
+                    (pathname === item.href ||
+                      (item.href !== "/" && pathname?.startsWith(item.href)));
 
                   return (
                     <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        className={`block text-base font-medium py-2 ${
-                          isActive
-                            ? "text-blue-500 font-semibold"
-                            : "text-gray-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400"
-                        }`}
-                        onClick={closeMobileMenu}
-                      >
-                        {item.label}
-                      </Link>
+                      {item.external ? (
+                        <a
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-base font-medium py-2 text-gray-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400"
+                          onClick={closeMobileMenu}
+                        >
+                          {item.label}
+                        </a>
+                      ) : (
+                        <Link
+                          href={item.href}
+                          className={`block text-base font-medium py-2 ${
+                            isActive
+                              ? "text-blue-500 font-semibold"
+                              : "text-gray-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400"
+                          }`}
+                          onClick={closeMobileMenu}
+                        >
+                          {item.label}
+                        </Link>
+                      )}
                     </li>
                   );
                 })}

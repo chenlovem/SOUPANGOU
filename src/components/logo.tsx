@@ -12,8 +12,8 @@ export function Logo({ className, size = 32 }: LogoProps) {
       style={{ width: size, height: size }}
     >
       <Image
-        src="/logos/logo.svg"
-        alt="盘小子Logo"
+        src="/logos/logo.jpg"
+        alt="搜盘狗Logo"
         width={size}
         height={size}
         className="object-contain"

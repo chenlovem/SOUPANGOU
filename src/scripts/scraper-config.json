@@ -1,0 +1,14 @@
+[
+  {
+    "name": "示例抓取源",
+    "url": "https://example.com/resources",
+    "categoryKey": "movie",
+    "diskType": "quark",
+    "selectors": {
+      "container": ".resource-list",
+      "title": ".resource-item a",
+      "url": ".resource-item a",
+      "desc": ".resource-item .desc"
+    }
+  }
+]

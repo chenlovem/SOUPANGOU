@@ -164,7 +164,7 @@ export default async function ResourcePage({
         <AlertDescription className="text-amber-700">
           <p>
             资源一定要转到夸克网盘方可观看全部，否则只能观看2分钟的试片，夸克还可以投屏！资源不对的话关注微信公众号
-            「小付同学的开发日常」，私信我免费帮找!
+            「小辰软件库」，私信我免费帮找!
           </p>
           <p className="mt-4 text-lg">二维码点击可放大查看</p>
           <p>
@@ -188,6 +188,17 @@ export default async function ResourcePage({
                     {itemDiskIcon}
                     {/* {item.diskType} */}
                   </span>
+                  {item.url && (
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:underline break-all max-w-[400px] truncate"
+                      title={item.url}
+                    >
+                      {item.url}
+                    </a>
+                  )}
                   <ClientLink
                     id={item.id}
                     title={resource.title}

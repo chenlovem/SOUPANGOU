@@ -1,11 +1,11 @@
 <p align="center">
   <img src="./public/logos/logo.svg" width="100" height="100">
 </p>
-<h1 align="center">盘小子</h1>
+<h1 align="center">搜盘狗</h1>
 
 ## 项目简介
 
-盘小子是一个一站式网盘资源搜索引擎，支持夸克网盘、百度网盘、阿里云盘等多平台，快速精准搜索，一键直达。
+搜盘狗是一个一站式网盘资源搜索引擎，支持夸克网盘、百度网盘、阿里云盘等多平台，快速精准搜索，一键直达。
 
 <p align="center">
   <img src="./screenshot/home.png">

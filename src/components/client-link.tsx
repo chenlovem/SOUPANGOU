@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -9,9 +9,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from "./ui/dialog";
-import { Loader2 } from "lucide-react";
+import { Loader2, ExternalLink, QrCode } from "lucide-react";
 import dynamic from "next/dynamic";
 
 // 动态导入QRCode组件，避免SSR问题
@@ -26,8 +25,8 @@ interface ClientLinkProps {
   categoryKey: string;
   url: string;
   externalUrl: string;
-  children?: React.ReactNode; // 子元素
-  [key: string]: unknown; // 允许任意其他 props
+  children?: React.ReactNode;
+  [key: string]: unknown;
 }
 
 export function ClientLink({
@@ -40,59 +39,33 @@ export function ClientLink({
   ...restProps
 }: ClientLinkProps): JSX.Element {
   const [loading, setLoading] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
   const [successUrl, setSuccessUrl] = useState("");
-  const [isMobile, setIsMobile] = useState(false);
 
-  // 检测是否为移动端
-  useEffect(() => {
-    const checkMobile = () => {
-      const userAgent = navigator.userAgent;
-      const isMobileDevice =
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          userAgent,
-        );
-      setIsMobile(isMobileDevice);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  // 已有 URL → 直接跳转，不需要弹窗
+  const finalUrl = url || successUrl;
 
   const handleClick = async () => {
-    // 如果已有URL，直接显示二维码
+    // 如果已有URL，直接打开
     if (url) {
-      setSuccessUrl(url);
-      setDialogOpen(true);
+      window.open(url, "_blank");
       return;
     }
 
+    // 没有URL时调用API获取转存链接
     setLoading(true);
     try {
-      // 更新数据库
       const response = await fetch("/api/resource-disk/update", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id,
-          title,
-          categoryKey,
-          externalUrl,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, title, categoryKey, externalUrl }),
       });
-
       const data = await response.json();
-      const newUrl = data.url;
-
-      // 设置成功URL并打开弹窗
-      setSuccessUrl(newUrl);
-      setDialogOpen(true);
+      if (data.url) {
+        window.open(data.url, "_blank");
+      }
     } catch (error) {
-      console.error("转存失败:", error);
+      console.error("获取链接失败:", error);
     } finally {
       setLoading(false);
     }
@@ -100,55 +73,53 @@ export function ClientLink({
 
   return (
     <>
-      <Button
-        variant="ghost"
-        onClick={handleClick}
-        {...restProps}
-        disabled={loading}
-      >
-        {loading ? "获取中..." : children}
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button onClick={handleClick} {...restProps} disabled={loading}>
+          {loading ? "获取中..." : children}
+        </Button>
+        {finalUrl && (
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.open(finalUrl, "_blank")}
+              className="flex items-center gap-1"
+            >
+              <ExternalLink className="h-4 w-4" />
+              打开链接
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setQrOpen(true)}
+              className="flex items-center gap-1"
+            >
+              <QrCode className="h-4 w-4" />
+              二维码
+            </Button>
+          </>
+        )}
+      </div>
 
-      <Dialog
-        open={dialogOpen}
-        onOpenChange={(open) => {
-          setDialogOpen(open);
-        }}
-      >
+      {/* 扫码弹窗（备选，默认不再弹出） */}
+      <Dialog open={qrOpen} onOpenChange={setQrOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>扫描二维码</DialogTitle>
             <DialogDescription>
-              请使用手机扫描二维码访问资源链接
+              手机扫码直接访问资源链接
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center justify-center py-4 space-y-4">
             <div className="bg-white p-4 rounded-md">
-              {successUrl && <QRCode value={successUrl} size={200} />}
+              {finalUrl && <QRCode value={finalUrl} size={200} />}
             </div>
+            <p className="text-sm text-muted-foreground break-all text-center max-w-full">
+              <a href={finalUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                {finalUrl}
+              </a>
+            </p>
           </div>
-          <DialogFooter className="sm:justify-between">
-            <div className="flex-1 flex flex-col gap-2">
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  setDialogOpen(false);
-                }}
-              >
-                关闭
-              </Button>
-              {isMobile && (
-                <Button
-                  onClick={() => {
-                    window.open(successUrl, "_blank");
-                    setDialogOpen(false);
-                  }}
-                >
-                  打开链接
-                </Button>
-              )}
-            </div>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

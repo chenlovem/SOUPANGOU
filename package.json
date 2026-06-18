@@ -12,6 +12,10 @@
 		"db:studio": "drizzle-kit studio",
 		"create-admin": "tsx src/scripts/create-admin.ts",
 		"migrate-resource-disk": "tsx src/scripts/migrate-resource-disk.ts",
+		"migrate-url": "tsx src/scripts/migrate-url-to-disk.ts",
+		"import": "tsx src/scripts/batch-import.ts",
+		"scrape": "tsx src/scripts/scraper.ts",
+		"crawl": "tsx src/scripts/crawler.ts",
 		"format": "biome format --write ./src"
 	},
 	"dependencies": {

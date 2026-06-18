@@ -180,10 +180,29 @@ export async function getResourceByPinyin(
     return null;
   }
   // 获取资源对应的网盘信息
-  const diskList = await db
+  let diskList = await db
     .select()
     .from(resourceDisk)
     .where(eq(resourceDisk.resourceId, list[0].id));
+
+  // 兜底：如果 resource_disk 没有数据，但 resource.url 有值，则自动创建一条
+  if (diskList.length === 0 && list[0].url) {
+    try {
+      await db.insert(resourceDisk).values({
+        resourceId: list[0].id,
+        diskType: list[0].diskType || "quark",
+        externalUrl: list[0].url,
+        url: list[0].url,
+      });
+      diskList = await db
+        .select()
+        .from(resourceDisk)
+        .where(eq(resourceDisk.resourceId, list[0].id));
+    } catch {
+      // 忽略并发重复插入错误
+    }
+  }
+
   return { ...list[0], diskList };
 }
 

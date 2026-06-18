@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>疤痕效应 — 真正困扰你的，是你以为的伤疤</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0f0f13;
+  --surface: #1a1a24;
+  --surface2: #24243a;
+  --text: #e8e8f0;
+  --text2: #9898b8;
+  --accent: #f0b4b4;
+  --accent2: #7c6cdc;
+  --scar: #d44a4a;
+  --transition: 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  font-family: 'Noto Sans SC', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ── 星空背景 ── */
+.stars {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  overflow: hidden;
+}
+.star {
+  position: absolute;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  animation: twinkle var(--duration) ease-in-out infinite alternate;
+}
+@keyframes twinkle {
+  0% { opacity: 0.1; transform: scale(0.8); }
+  100% { opacity: 0.8; transform: scale(1.2); }
+}
+
+/* ── 布局 ── */
+.container {
+  position: relative; z-index: 1;
+  max-width: 800px; margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* ── 头部 ── */
+.header {
+  text-align: center; padding: 4rem 0 3rem;
+}
+.header .emoji {
+  font-size: 4rem; display: block; margin-bottom: 1rem;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.header h1 {
+  font-size: 2.4rem; font-weight: 900;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; line-height: 1.3;
+}
+.header .sub {
+  color: var(--text2); font-size: 1.05rem; margin-top: 1rem;
+  font-weight: 300; letter-spacing: 0.05em;
+}
+
+/* ── 进度条 ── */
+.progress-bar {
+  position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 100;
+  background: var(--surface2); border-radius: 0 3px 3px 0;
+}
+.progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  border-radius: 0 3px 3px 0;
+  transition: width 0.3s ease;
+}
+
+/* ── 章节 ── */
+.chapter {
+  opacity: 0; transform: translateY(60px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  margin-bottom: 5rem;
+  position: relative;
+}
+.chapter.visible {
+  opacity: 1; transform: translateY(0);
+}
+.chapter-number {
+  font-size: 0.8rem; font-weight: 700; letter-spacing: 0.15em;
+  color: var(--accent2); text-transform: uppercase; margin-bottom: 0.5rem;
+}
+.chapter h2 {
+  font-size: 1.6rem; font-weight: 700; margin-bottom: 1.2rem;
+  line-height: 1.4;
+}
+.chapter p {
+  font-size: 1.05rem; line-height: 1.9; color: var(--text2);
+  margin-bottom: 1rem;
+}
+.chapter p strong {
+  color: var(--text); font-weight: 500;
+}
+
+/* ── 交互卡片 ── */
+.interactive-area {
+  background: var(--surface); border-radius: 20px;
+  padding: 2.5rem 2rem; margin: 2rem 0;
+  border: 1px solid rgba(255,255,255,0.06);
+  position: relative; overflow: hidden;
+}
+
+/* ── 脸动画 ── */
+.face-container {
+  display: flex; justify-content: center; align-items: center;
+  padding: 1.5rem 0;
+}
+.face {
+  position: relative; width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #f5d6c6, #d4a894);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.face .scar-line {
+  position: absolute;
+  top: 48%; left: 42%; right: 10%;
+  height: 3px; border-radius: 2px;
+  background: var(--scar);
+  transform-origin: left center;
+  transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 0; transform: scaleX(0) rotate(-8deg);
+}
+.face .scar-line.show {
+  opacity: 1; transform: scaleX(1) rotate(-8deg);
+}
+.face .scar-line::before,
+.face .scar-line::after {
+  content: ''; position: absolute; top: -3px;
+  width: 2px; height: 10px; background: var(--scar);
+  border-radius: 1px;
+}
+.face .scar-line::before { left: 20%; transform: rotate(15deg); }
+.face .scar-line::after { right: 25%; transform: rotate(-12deg); }
+.face .eye {
+  position: absolute; width: 22px; height: 28px;
+  background: #2a1a12; border-radius: 50%; top: 32%;
+  transition: all 0.6s ease;
+}
+.face .eye.left { left: 28%; }
+.face .eye.right { right: 28%; }
+.face .eye.squint { height: 6px; border-radius: 3px; }
+.face .mouth {
+  position: absolute; bottom: 25%; left: 38%; right: 38%;
+  height: 4px; border-radius: 2px;
+  background: #8a6050; transition: all 0.6s ease;
+}
+.face .mouth.sad { border-radius: 4px; height: 3px; width: 60%; left: 20%; right: 20%; }
+.face .mouth.frown {
+  height: 3px;
+  border-radius: 0 0 12px 12px;
+  border: 2px solid #8a6050; background: transparent;
+  width: 50%; left: 25%; bottom: 22%;
+}
+
+/* ── 人群动画 ── */
+.crowd {
+  display: flex; justify-content: center; gap: 8px;
+  margin: 1.5rem 0; flex-wrap: wrap;
+}
+.person {
+  width: 48px; height: 60px;
+  background: var(--surface2); border-radius: 24px 24px 12px 12px;
+  transition: all 0.6s ease; position: relative;
+  opacity: 0.5;
+}
+.person .dot-eye {
+  position: absolute; top: 18px;
+  width: 3px; height: 3px; border-radius: 50%;
+  background: var(--text2);
+  transition: all 0.6s ease;
+}
+.person .dot-eye.l { left: 16px; }
+.person .dot-eye.r { right: 16px; }
+.person.look-away { transform: rotate(-10deg); opacity: 0.4; }
+.person.whisper { transform: scale(1.08); }
+.person.whisper .dot-eye { background: var(--scar); }
+
+/* ── 实验步骤时间线 ── */
+.timeline {
+  position: relative; padding-left: 2.5rem; margin: 2rem 0;
+}
+.timeline::before {
+  content: ''; position: absolute; left: 10px; top: 0; bottom: 0;
+  width: 2px; background: var(--surface2);
+}
+.timeline-item {
+  position: relative; margin-bottom: 2rem; padding-left: 0.5rem;
+  opacity: 0; transform: translateX(-20px);
+  transition: all 0.6s ease;
+}
+.timeline-item.visible {
+  opacity: 1; transform: translateX(0);
+}
+.timeline-item::before {
+  content: ''; position: absolute;
+  left: -2.15rem; top: 6px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--accent2); border: 3px solid var(--bg);
+}
+.timeline-item .step-label {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--accent2); margin-bottom: 0.3rem;
+}
+.timeline-item .step-text {
+  font-size: 0.95rem; line-height: 1.7; color: var(--text2);
+}
+
+/* ── 关键反转 ── */
+.reveal-box {
+  background: linear-gradient(135deg, rgba(124,108,220,0.1), rgba(244,180,180,0.08));
+  border: 1px solid rgba(124,108,220,0.2);
+  border-radius: 20px; padding: 2.5rem 2rem;
+  margin: 2rem 0;
+  text-align: center;
+  opacity: 0; transform: scale(0.95);
+  transition: all 0.8s ease;
+}
+.reveal-box.visible {
+  opacity: 1; transform: scale(1);
+}
+.reveal-box .big-text {
+  font-size: 2rem; font-weight: 900; line-height: 1.4;
+  margin-bottom: 1rem;
+}
+.reveal-box .big-text .highlight {
+  background: linear-gradient(135deg, var(--scar), #e8916a);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.reveal-box p { color: var(--text2); line-height: 1.8; font-size: 1.05rem; }
+
+/* ── 镜子揭示动画 ── */
+.mirror-stage {
+  display: flex; justify-content: center; margin: 2rem 0;
+  perspective: 600px;
+}
+.mirror {
+  width: 180px; height: 240px;
+  background: linear-gradient(135deg, rgba(200,220,255,0.12), rgba(180,200,255,0.06));
+  border: 1px solid rgba(200,220,255,0.15);
+  border-radius: 12px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: rotateY(0deg);
+  position: relative; overflow: hidden;
+}
+.mirror.flipped {
+  transform: rotateY(180deg);
+}
+.mirror .mirror-face {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #f5d6c6, #d4a894);
+  transition: all 0.8s ease;
+  position: relative;
+}
+.mirror .mirror-face .mirror-scar {
+  position: absolute; top: 42%; left: 10%; right: 10%;
+  height: 2px; background: var(--scar);
+  border-radius: 1px;
+  opacity: 1; transition: all 1s ease;
+}
+.mirror.flipped .mirror-face .mirror-scar {
+  opacity: 0;
+}
+.mirror .mirror-label {
+  margin-top: 1rem; font-size: 0.85rem; color: var(--text2);
+}
+.mirror.flipped .mirror-label { transform: rotateY(180deg); }
+
+/* ── 结语 ── */
+.ending {
+  text-align: center; padding: 4rem 0;
+  border-top: 1px solid var(--surface2); margin-top: 3rem;
+}
+.ending .quote {
+  font-size: 1.5rem; font-weight: 500; line-height: 1.6;
+  max-width: 600px; margin: 0 auto 1.5rem;
+  color: var(--text);
+}
+.ending .quote-source {
+  font-size: 0.9rem; color: var(--text2);
+}
+.ending .quote-source::before { content: '— '; }
+
+/* ── 滚动提示 ── */
+.scroll-hint {
+  text-align: center; padding: 2rem;
+  color: var(--text2); font-size: 0.9rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* ── 响应式 ── */
+@media (max-width: 600px) {
+  .header h1 { font-size: 1.8rem; }
+  .face { width: 150px; height: 150px; }
+  .chapter h2 { font-size: 1.3rem; }
+  .reveal-box .big-text { font-size: 1.5rem; }
+  .crowd .person { width: 40px; height: 52px; }
+  .container { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- 星空 -->
+<div class="stars" id="stars"></div>
+
+<!-- 进度条 -->
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- 容器 -->
+<div class="container">
+
+  <!-- 头部 -->
+  <header class="header">
+    <span class="emoji">🎭</span>
+    <h1>疤痕效应</h1>
+    <p class="sub">真正困扰你的，不是别人怎么看，而是你以为的伤疤</p>
+  </header>
+
+  <div class="scroll-hint">↓ 向下滚动探索 ↓</div>
+
+  <!--　　章节1 — 实验 ──>
+  <section class="chapter" data-chapter="1">
+    <div class="chapter-number">第一章</div>
+    <h2>一个经典的心理学实验</h2>
+    <p>
+      研究者邀请了几位志愿者，为他们化上<strong>逼真的伤痕妆</strong>——
+      镜子里看，脸上有一道触目惊心的疤。
+    </p>
+    <p>
+      然后让他们<strong>走进公共场所</strong>，去感受陌生人对自己的反应。
+    </p>
+
+    <!-- 脸 + 伤痕 -->
+    <div class="interactive-area">
+      <div class="face-container">
+        <div class="face" id="experimentFace">
+          <div class="eye left" id="leftEye"></div>
+          <div class="eye right" id="rightEye"></div>
+          <div class="scar-line" id="scarLine"></div>
+          <div class="mouth" id="mouth"></div>
+        </div>
+      </div>
+      <p style="text-align:center;color:var(--text2);font-size:0.9rem;">
+        他们带着"这道疤"走进了人群……
+      </p>
+    </div>
+  </section>
+
+  <!-- 章节2 — 出门 -->
+  <section class="chapter" data-chapter="2">
+    <div class="chapter-number">第二章</div>
+    <h2>他们看到了什么？</h2>
+    <p>
+      几乎所有志愿者都说，自己<strong>感受到了异样的眼光</strong>。
+    </p>
+
+    <!-- 人群 -->
+    <div class="interactive-area">
+      <p style="text-align:center;color:var(--text2);font-size:0.9rem;margin-bottom:1rem;">
+        在他们眼中，周围的人是这么反应的——
+      </p>
+      <div class="crowd" id="crowd"></div>
+      <p style="text-align:center;color:var(--text2);font-size:0.85rem;margin-top:1rem;display:flex;flex-wrap:wrap;justify-content:center;gap:0.5rem 1.5rem;">
+        <span style="color:var(--scar);">●</span> 有人在嫌弃我
+        <span style="color:var(--scar);">●</span> 他们在回避我
+        <span style="color:var(--scar);">●</span> 他们在议论我
+      </p>
+    </div>
+  </section>
+
+  <!-- 章节3 — 真相 -->
+  <section class="chapter" data-chapter="3">
+    <div class="chapter-number">第三章</div>
+    <h2>然而真相是……</h2>
+
+    <div class="timeline" id="timeline">
+      <div class="timeline-item" data-step="1">
+        <div class="step-label">化妆</div>
+        <div class="step-text">化妆师为他们画上了逼真的伤痕。</div>
+      </div>
+      <div class="timeline-item" data-step="2">
+        <div class="step-label">"补妆"</div>
+        <div class="step-text">出门前，化妆师借口"补妆"，<strong>悄悄把疤痕擦掉了</strong>。</div>
+      </div>
+      <div class="timeline-item" data-step="3">
+        <div class="step-label">出门</div>
+        <div class="step-text">他们走在大街上，脸上<strong>其实干干净净，跟平常一模一样</strong>。</div>
+      </div>
+    </div>
+
+    <!-- 镜子揭示 -->
+    <div class="mirror-stage">
+      <div class="mirror" id="mirror">
+        <div class="mirror-face">
+          <div class="mirror-scar" id="mirrorScar"></div>
+        </div>
+        <div class="mirror-label">镜中的我</div>
+      </div>
+    </div>
+    <p style="text-align:center;color:var(--text2);font-size:0.9rem;">
+      疤痕早已被擦去，但他们<strong>不知道</strong>。
+    </p>
+  </section>
+
+  <!-- 章节4 — 揭示 -->
+  <section class="chapter" data-chapter="4">
+    <div class="chapter-number">核心结论</div>
+
+    <div class="reveal-box" id="revealBox">
+      <div class="big-text">
+        那道「疤」<br>
+        <span class="highlight">只存在于你心里</span>
+      </div>
+      <p>
+        当一个人内心认定自己身上有某种缺陷时，他会不自觉地
+        <strong>把这种自我认知投射到别人身上</strong>，
+        然后"看见"自己想看见的反应——哪怕那些反应<strong>根本不存在</strong>。
+      </p>
+    </div>
+  </section>
+
+  <!-- 章节5 — 现实 -->
+  <section class="chapter" data-chapter="5">
+    <div class="chapter-number">生活中的"疤痕"</div>
+    <h2>你也经历过吗？</h2>
+    <div class="interactive-area" style="text-align:center;">
+      <div style="font-size:3rem;margin-bottom:1rem;">💬</div>
+      <p style="margin-bottom:0.8rem;">
+        <strong>害怕被否定的人</strong>，总觉得别人的沉默是嫌弃。
+      </p>
+      <p style="margin-bottom:0.8rem;">
+        <strong>担心被嘲笑的人</strong>，总觉得别人的耳语是在说自己。
+      </p>
+      <p style="margin-bottom:0.8rem;">
+        <strong>内心带着伤的人</strong>，看什么都像刀子。
+      </p>
+    </div>
+  </section>
+
+  <!-- 结尾 -->
+  <section class="chapter ending" data-chapter="6">
+    <div class="quote">
+      "我们以为别人眼中的自己，<br>其实是我们自己眼中的自己。"
+    </div>
+    <div class="quote-source">疤痕效应</div>
+    <p style="margin-top:2rem;color:var(--text2);font-size:0.95rem;">
+      你心里的那道疤，也许从未有人看见过。<br>
+      <strong style="color:var(--accent2);">放下镜子，走出去吧。</strong>
+    </p>
+  </section>
+
+</div>
+
+<script>
+// ── 星空 ──
+(function() {
+  const el = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.setProperty('--duration', (2 + Math.random() * 3) + 's');
+    s.style.animationDelay = Math.random() * 3 + 's';
+    s.style.width = s.style.height = (1 + Math.random() * 2) + 'px';
+    el.appendChild(s);
+  }
+})();
+
+// ── 人群 ──
+(function() {
+  const el = document.getElementById('crowd');
+  const actions = ['look-away', 'whisper', '', '', 'look-away', 'whisper', '', 'look-away', ''];
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement('div');
+    p.className = 'person' + (actions[i % actions.length] ? ' ' + actions[i % actions.length] : '');
+    p.innerHTML = '<div class="dot-eye l"></div><div class="dot-eye r"></div>';
+    el.appendChild(p);
+  }
+})();
+
+// ── 滚动动画 ──
+const progressFill = document.getElementById('progressFill');
+
+function isInView(el, offset = 0.75) {
+  const rect = el.getBoundingClientRect();
+  const vh = window.innerHeight;
+  return rect.top < vh * offset && rect.bottom > 0;
+}
+
+function animate() {
+  // 进度条
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  progressFill.style.width = Math.min(100, (scrollTop / docHeight) * 100) + '%';
+
+  // 章节淡入
+  document.querySelectorAll('.chapter').forEach(ch => {
+    if (isInView(ch, 0.78)) ch.classList.add('visible');
+  });
+
+  // 时间线
+  document.querySelectorAll('.timeline-item').forEach(item => {
+    if (isInView(item, 0.8)) item.classList.add('visible');
+  });
+
+  // 揭示框
+  const revealBox = document.getElementById('revealBox');
+  if (isInView(revealBox, 0.75)) revealBox.classList.add('visible');
+
+  // ── 脸动画 ──
+  const experimentFace = document.getElementById('experimentFace');
+  if (isInView(experimentFace, 0.7)) {
+    const scarLine = document.getElementById('scarLine');
+    const leftEye = document.getElementById('leftEye');
+    const rightEye = document.getElementById('rightEye');
+    const mouth = document.getElementById('mouth');
+    setTimeout(() => scarLine.classList.add('show'), 300);
+    setTimeout(() => { leftEye.classList.add('squint'); rightEye.classList.add('squint'); }, 600);
+    setTimeout(() => mouth.classList.add('frown'), 900);
+  }
+
+  // ── 镜子翻转 ──
+  const mirror = document.getElementById('mirror');
+  if (isInView(mirror, 0.7)) {
+    setTimeout(() => mirror.classList.add('flipped'), 500);
+  }
+}
+
+window.addEventListener('scroll', animate);
+window.addEventListener('resize', animate);
+setTimeout(animate, 200);
+</script>
+</body>
+</html>

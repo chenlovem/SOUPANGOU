@@ -1,7 +1,7 @@
 {
-  "name": "盘小子 - 免费网盘资源搜索引擎",
-  "short_name": "盘小子",
-  "description": "盘小子是一个一站式网盘资源搜索引擎，支持夸克网盘、百度网盘、阿里云盘等多平台，快速精准搜索，一键直达",
+  "name": "搜盘狗 - 免费网盘资源搜索引擎",
+  "short_name": "搜盘狗",
+  "description": "搜盘狗是一个一站式网盘资源搜索引擎，支持夸克网盘、百度网盘、阿里云盘等多平台，快速精准搜索，一键直达",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
