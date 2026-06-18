@@ -1,0 +1,1 @@
+@"C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe" -u pxYzuBDEjbErzzv.root -h gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com -P 4000 -p8Egv8FqkG0ajzPAj --default-character-set=utf8mb4 soupangou < "C:\Users\??\panxiaozi\data_clean.sql"
