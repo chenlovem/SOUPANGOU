@@ -16,6 +16,7 @@
 		"import": "tsx src/scripts/batch-import.ts",
 		"scrape": "tsx src/scripts/scraper.ts",
 		"crawl": "tsx src/scripts/crawler.ts",
+		"check-links": "tsx src/scripts/check-links.ts",
 		"format": "biome format --write ./src"
 	},
 	"dependencies": {

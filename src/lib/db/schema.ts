@@ -53,6 +53,8 @@ export const resourceDisk = mysqlTable(
     diskType: varchar("disk_type", { length: 10 }).notNull(),
     externalUrl: varchar("external_url", { length: 1000 }).notNull(),
     url: varchar("url", { length: 1000 }).notNull().default(""),
+    status: varchar("status", { length: 20 }).notNull().default("unknown"), // valid / invalid / unknown
+    checkedAt: datetime("checked_at"),
     updatedAt: datetime("updated_at").default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => [index("idx_resource_id").on(table.resourceId)],

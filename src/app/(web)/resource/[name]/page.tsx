@@ -188,6 +188,23 @@ export default async function ResourcePage({
                     {itemDiskIcon}
                     {/* {item.diskType} */}
                   </span>
+                  {/* 链接有效性标签 */}
+                  {item.status === "invalid" && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                      <TriangleAlert className="h-3 w-3 mr-1" />
+                      已失效
+                    </span>
+                  )}
+                  {item.status === "valid" && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                      有效
+                    </span>
+                  )}
+                  {(!item.status || item.status === "unknown") && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
+                      未检测
+                    </span>
+                  )}
                   {item.url && (
                     <a
                       href={item.url}
